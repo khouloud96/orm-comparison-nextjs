@@ -25,13 +25,21 @@ export default async function handler(
 
         return res
           .status(201)
-          .json({ id: result?.id, message: "User created successfully." });
+          .json({
+            id: result?.id.toString(),
+            message: "User created successfully.",
+          });
       }
 
       // READ: Récupérer tous les utilisateurs
       case "GET": {
         const users = await db.selectFrom("users").selectAll().execute();
-        return res.status(200).json(users);
+        return res.status(200).json(
+          users.map((user) => ({
+            ...user,
+            id: user.id.toString(),
+          }))
+        );
       }
 
       // UPDATE: Mettre à jour un utilisateur
@@ -57,7 +65,7 @@ export default async function handler(
         if (updated && updated.numUpdatedRows > 0) {
           return res.status(200).json({
             message: "User updated successfully.",
-            rowsAffected: updated.numUpdatedRows,
+            rowsAffected: updated.numUpdatedRows.toString(),
           });
         }
       }
@@ -77,7 +85,7 @@ export default async function handler(
 
         return res.status(200).json({
           message: "User deleted successfully.",
-          rowsAffected: deleted?.numDeletedRows,
+          rowsAffected: deleted?.numDeletedRows.toString(),
         });
       }
 
